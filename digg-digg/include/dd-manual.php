@@ -166,14 +166,20 @@ function dd_ybuzz_generate( $buttonDesign = 'Normal' ) {
 	echo $dd_ybuzz->finalURL;
 }
 
-function dd_twitter_generate( $buttonDesign = 'Normal', $source = '', $content = '' ) {
+function dd_twitter_generate( $buttonDesign = 'Normal', $source = '', $content = '', $url = '' ) {
 	$post_data = dd_getPostData();
+
+	if ( empty( $url ) )
+		$url = $post_data['link'];
+
+	if ( empty( $content ) )
+		$content = $post_data['title'];
 
     global $globalcfg;
     $globalcfg[ DD_GLOBAL_TWITTER_OPTION ][ DD_GLOBAL_TWITTER_OPTION_SOURCE ] = $source;
 
     $dd_twitter = new DD_Twitter();
-    $dd_twitter->constructURL( $post_data['link'], $content, $buttonDesign, $post_data['id'], false, $globalcfg );
+    $dd_twitter->constructURL( $url, $content, $buttonDesign, $post_data['id'], false, $globalcfg );
 
 	echo $dd_twitter->finalURL;
 }
@@ -223,11 +229,14 @@ function dd_fbshareme_generate( $buttonDesign = 'Normal' ) {
 	echo $dd_fbshareme->finalURL;
 }
 
-function dd_fblike_generate( $buttonDesign = 'Like Standard' ) {
+function dd_fblike_generate( $buttonDesign = 'Like Standard', $url = '' ) {
 	$post_data = dd_getPostData();
 
+    if ( empty( $url ) )
+    	$url = $post_data['link'];
+
     $dd_fblike = new DD_FbLike();
-    $dd_fblike->constructURL( $post_data['link'], $post_data['title'], $buttonDesign, $post_data['id'],false );
+    $dd_fblike->constructURL( $url, $post_data['title'], $buttonDesign, $post_data['id'],false );
 
 	echo $dd_fblike->finalURL;
 }
@@ -322,11 +331,14 @@ function dd_fblike_xfbml_generate( $buttonDesign = 'Like Standard' ) {
 	echo $dd_fblike_xfbml->finalURL;
 }
 
-function dd_google1_generate( $buttonDesign = 'Normal' ) {
+function dd_google1_generate( $buttonDesign = 'Normal', $url = '' ) {
 	$post_data = dd_getPostData();
 
+	if ( empty( $url ) )
+		$url = $post_data['link'];
+
     $dd_google1 = new DD_Google1();
-    $dd_google1->constructURL( $post_data['link'], $post_data['title'], $buttonDesign, $post_data['id'],false );
+    $dd_google1->constructURL( $url, $post_data['title'], $buttonDesign, $post_data['id'],false );
 
 	echo $dd_google1->finalURL;
 }
@@ -341,11 +353,14 @@ function dd_buffer_generate( $buttonDesign = 'Normal' ) {
 	echo $dd_buffer->finalURL;
 }
 
-function dd_pinterest_generate( $buttonDesign = 'Normal' ) {
+function dd_pinterest_generate( $buttonDesign = 'Normal', $url = '' ) {
 	$post_data = dd_getPostData();
 
+	if ( empty( $url ) )
+		$url = $post_data['link'];
+
     $dd_pinterest = new DD_Pinterest();
-    $dd_pinterest->constructURL( $post_data['link'], $post_data['title'], $buttonDesign, $post_data['id'], false );
+    $dd_pinterest->constructURL( $url, $post_data['title'], $buttonDesign, $post_data['id'], false );
 
 	echo $dd_pinterest->finalURL;
 }
@@ -363,13 +378,10 @@ function dd_flattr_generate( $buttonDesign = 'Normal', $uid= '' ) {
 }
 
 function dd_getPostData() {
-	global $wp_query;
-    $post = $wp_query->post; //get post content
-    $id = $post->ID; //get post id
-    $postlink = get_permalink( $id ); //get post link
-    $title = trim( $post->post_title ); // get post title
-    $link = split( DD_DASH, $postlink ); //split the link with '#', for comment
+	global $post;
 
-    return array( 'id' => $id, 'link' => $link[0], 'title' => $title );
+    $link = split( DD_DASH, get_permalink( $post->ID ) ); //split the link with '#', for comment
+
+    return array( 'id' => $post->ID, 'link' => $link[0], 'title' => trim( $post->post_title ) );
 }
 ?>
